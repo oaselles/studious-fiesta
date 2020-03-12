@@ -4,16 +4,22 @@ import nltk
 from nltk.corpus import gutenberg
 import pandas as pd
 
+from gensim import corpora
+from collections import defaultdict
+
 from urllib import request
 
-'http://www.gutenberg.org/cache/epub/8019/pg8019.txt'
+# 'http://www.gutenberg.org/cache/epub/8019/pg8019.txt'
 
 
-def clean_text(content):
+def tokenize(doc):
+
     stopwords = nltk.corpus.stopwords.words('english')
-    # content = [w for w in content if w.lower() not in stopwords]
-    content = [w.lower() for w in content if w.isalpha()]
-    return content
+    tokens = doc.split()
+    tokens = [t for t in tokens if t.lower() not in stopwords]
+    tokens = [t.lower() for t in tokens if t.isalpha()]
+
+    return tokens
 
 
 if not os.path.exists('shakespeare-complete-raw.txt'):
@@ -24,8 +30,11 @@ if not os.path.exists('shakespeare-complete-raw.txt'):
         o.write(raw)
 
 text = open('shakespeare-complete-raw.txt').read()
-sonnets = text[text.find('THE SONNETS'):text.find('THE END')]
-words = clean_text(nltk.word_tokenize(sonnets))
+sonnets_complete = text[text.find('THE SONNETS'):text.find('THE END')]
+sonnets = sonnets_complete.split('\n\n\n')
+sonnets = [tokenize(s) for s in sonnets]
+
+#words = clean_text(nltk.word_tokenize(sonnets))
 
 
 # blake = gutenberg.words('blake-poems.txt')
